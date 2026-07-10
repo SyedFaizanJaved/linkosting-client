@@ -1,0 +1,21 @@
+:root, body[data-theme="light"] {
+  --canvas:#F6F3EE; --card:#FFFFFF; --ink:#23222B; --sub:#6E6B7B; --faint:#9A97A6;
+  --accent:#5B63F5; --accent2:color-mix(in oklab,var(--accent) 82%,#20204A);
+  --tint:color-mix(in oklab,var(--accent) 11%,#FFFFFF);
+  --rowBg:#FAF8F5; --chipBg:#F1EFEA; --line:rgba(35,30,60,.09); --cardline:rgba(35,30,60,.03);
+  --green:#178A5A; --greenBg:#E4F6EC; --amber:#B0680C; --amberBg:#FCEFDC; --red:#C4453E; --redBg:#FAE8E6;
+  --heroGrad:color-mix(in oklab,var(--accent) 8%,#FFFFFF);
+  --inkBtn:#23222B; --onInk:#FFFFFF;
+  --sh-sm:0 2px 8px rgba(35,30,60,.05); --sh-md:0 4px 14px rgba(35,30,60,.06); --sh-lg:0 10px 30px rgba(35,30,60,.08);
+  --accSh:0 6px 16px color-mix(in oklab,var(--accent) 32%,transparent);
+}
+body[data-theme="dark"] {
+  --canvas:#151419; --card:#1F1E26; --ink:#F0EEF6; --sub:#A5A2B3; --faint:#767283;
+  --accent:#7B82FF; --accent2:#9BA1FF; --tint:color-mix(in oklab,var(--accent) 20%,#1F1E26);
+  --rowBg:#272530; --chipBg:#2B2934; --line:rgba(255,255,255,.08); --cardline:rgba(255,255,255,.06);
+  --green:#4CC38A; --greenBg:#1D3A2B; --amber:#E0A458; --amberBg:#3B2D18; --red:#F08578; --redBg:#42221F;
+  --heroGrad:color-mix(in oklab,var(--accent) 16%,#1F1E26);
+  --inkBtn:#F0EEF6; --onInk:#1A1920;
+  --sh-sm:0 2px 8px rgba(0,0,0,.25); --sh-md:0 4px 14px rgba(0,0,0,.3); --sh-lg:0 10px 30px rgba(0,0,0,.35);
+  --accSh:0 6px 16px color-mix(in oklab,var(--accent) 30%,transparent);
+}
