@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api.js';
 import { useSettings, useSaveSettings } from '../settings/useSettings.js';
 
@@ -13,7 +13,7 @@ export default function Onboarding() {
   const [time, setTime] = useState('12:00');
   const [error, setError] = useState('');
 
-  if (s && s.onboarded === 'true') { navigate('/', { replace: true }); return null; }
+  if (s && s.onboarded === 'true') return <Navigate to="/" replace />;
 
   async function connectLinkedIn() {
     try {
