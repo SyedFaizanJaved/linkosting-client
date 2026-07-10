@@ -33,8 +33,12 @@ export default function Settings() {
   }
 
   async function connectLinkedIn() {
-    const { url } = await api('/api/linkedin/auth-url');
-    window.open(url, '_blank');
+    try {
+      const { url } = await api('/api/linkedin/auth-url');
+      window.location.href = url;
+    } catch (e) {
+      setMsg(e.message);
+    }
   }
 
   if (!s) return <p>{msg || 'Loading…'}</p>;

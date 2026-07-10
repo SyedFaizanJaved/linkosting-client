@@ -6,6 +6,7 @@ export default function Today() {
   const [text, setText] = useState('');
   const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -22,6 +23,8 @@ export default function Today() {
   useEffect(() => { load(); }, []);
 
   async function act(action) {
+    if (busy) return;
+    setBusy(true);
     setMsg('Working…');
     try {
       if (action !== 'regenerate') {
@@ -34,6 +37,8 @@ export default function Today() {
       await load();
     } catch (e) {
       setMsg(e.message);
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -51,10 +56,10 @@ export default function Today() {
       </p>
       <textarea rows={14} value={text} onChange={e => setText(e.target.value)} disabled={locked} />
       <div className="actions">
-        <button onClick={() => act('save')} disabled={locked}>Save edit</button>
-        <button onClick={() => act('approve')} disabled={locked}>Approve (posts at 5 PM)</button>
-        <button onClick={() => act('publish')} disabled={locked}>Post now</button>
-        <button onClick={() => act('regenerate')} disabled={locked}>Regenerate</button>
+        <button onClick={() => act('save')} disabled={locked || busy}>Save edit</button>
+        <button onClick={() => act('approve')} disabled={locked || busy}>Approve (posts at 5 PM)</button>
+        <button onClick={() => act('publish')} disabled={locked || busy}>Post now</button>
+        <button onClick={() => act('regenerate')} disabled={locked || busy}>Regenerate</button>
       </div>
       <p>{msg}</p>
     </div>
