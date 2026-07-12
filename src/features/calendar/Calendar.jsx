@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDrafts, useScheduleDraft } from '../drafts/hooks.js';
-import { fmtDateTime } from '../../lib/format.js';
 
 function monthDays(year, month) {
   const first = new Date(year, month, 1);

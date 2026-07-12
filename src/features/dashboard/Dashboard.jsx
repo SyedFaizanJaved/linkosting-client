@@ -36,7 +36,7 @@ export default function Dashboard() {
         </div>
         {topics.length > 0 && (
           <div className="actions" style={{ marginTop: 14 }}>
-            {topics.map(t => <span key={t} className="chip" onClick={() => navigate(`/generate?prompt=${encodeURIComponent(t)}`)}>{t}</span>)}
+            {topics.map(t => <span key={t} className="chip" onClick={() => navigate(`/generate?prompt=${encodeURIComponent(t)}&topic=${encodeURIComponent(t)}`)}>{t}</span>)}
             <span className="chip" style={{ borderStyle: 'dashed' }} onClick={() => navigate('/topics')}>+ New topic</span>
           </div>
         )}

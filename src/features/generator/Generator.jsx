@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGenerate } from './useGenerate.js';
 import { useCreateDraft } from '../drafts/hooks.js';
+import { useSettings } from '../settings/useSettings.js';
 
 const TONES = ['professional', 'friendly', 'bold', 'analytical'];
 const LENGTHS = ['short', 'medium', 'long'];
@@ -9,14 +10,17 @@ const LENGTHS = ['short', 'medium', 'long'];
 export default function Generator() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
+  const { data: settings } = useSettings();
+  const topics = (settings?.topics || '').split(',').map(t => t.trim()).filter(Boolean);
   const [prompt, setPrompt] = useState(params.get('prompt') || '');
+  const [topic, setTopic] = useState(params.get('topic') || '');
   const [tone, setTone] = useState('professional');
   const [length, setLength] = useState('medium');
   const generate = useGenerate();
   const create = useCreateDraft();
 
   function saveVariant(content) {
-    create.mutate({ content, source: 'generated' }, {
+    create.mutate({ content, source: 'generated', topic: topic || null }, {
       onSuccess: d => navigate(`/drafts/${d.id}`),
     });
   }
@@ -34,6 +38,15 @@ export default function Generator() {
           {TONES.map(t => <span key={t} className={`chip${tone === t ? ' active' : ''}`} onClick={() => setTone(t)}>{t}</span>)}
           <span className="faint" style={{ fontSize: 11.5, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.06em', marginLeft: 6 }}>Length</span>
           {LENGTHS.map(l => <span key={l} className={`chip${length === l ? ' active' : ''}`} onClick={() => setLength(l)}>{l}</span>)}
+          {topics.length > 0 && (
+            <>
+              <span className="faint" style={{ fontSize: 11.5, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.06em', marginLeft: 6 }}>Topic</span>
+              <select className="select" style={{ width: 160 }} value={topic} onChange={e => setTopic(e.target.value)}>
+                <option value="">No topic</option>
+                {topics.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </>
+          )}
           <span style={{ flex: 1 }} />
           <button className="btn" disabled={generate.isPending || !prompt.trim()}
             onClick={() => generate.mutate({ prompt, tone, length })}>

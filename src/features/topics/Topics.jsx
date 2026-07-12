@@ -39,7 +39,7 @@ export default function Topics() {
             <span style={{ fontWeight: 800 }}>{t}</span>
             <span className="badge">{counts[t] || 0} posts</span>
             <span style={{ flex: 1 }} />
-            <button className="btn ghost" onClick={() => navigate(`/generate?prompt=${encodeURIComponent(t)}`)}>Generate ✦</button>
+            <button className="btn ghost" onClick={() => navigate(`/generate?prompt=${encodeURIComponent(t)}&topic=${encodeURIComponent(t)}`)}>Generate ✦</button>
             <button className="btn ghost" disabled={save.isPending} onClick={() => saveTopics(topics.filter(x => x !== t))}>Remove</button>
           </div>
         ))}
