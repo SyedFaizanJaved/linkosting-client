@@ -85,7 +85,7 @@ export default function Settings() {
         ) : (
           <p className="muted" style={{ margin: '8px 0 12px' }}>
             {s.linkedin.connected
-              ? `Connected — token expires in ${s.linkedin.daysLeft} day(s). Reconnect any time.`
+              ? `Connected — token expires ${s.linkedin.daysLeft === 0 ? 'today' : `in ${s.linkedin.daysLeft} day(s)`}. Reconnect any time.`
               : 'Not connected. Publishing needs this.'}
           </p>
         )}

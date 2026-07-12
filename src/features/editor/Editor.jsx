@@ -5,7 +5,7 @@ import {
   usePublishDraft, useRegenerateDraft, useSaveMetrics,
 } from '../drafts/hooks.js';
 import { useSettings } from '../settings/useSettings.js';
-import { fmtDateTime, utcHHMMToLocal, nowLocalInputValue } from '../../lib/format.js';
+import { fmtDateTime, nowLocalInputValue } from '../../lib/format.js';
 import ConfirmButton from '../../components/ConfirmButton.jsx';
 import Feedback from '../../components/Feedback.jsx';
 
@@ -64,7 +64,7 @@ export default function Editor() {
       </div>
       {draft.status === 'approved' && (
         <p className="muted" style={{ margin: '6px 0 0' }}>
-          Will post {slotLabel}{draft.scheduled_at ? ' — Unschedule to stop it.' : ` (your default time${settings?.default_post_time ? `, ${utcHHMMToLocal(settings.default_post_time)}` : ''}).`}
+          Will post {slotLabel} — Unschedule to stop it.
         </p>
       )}
       {draft.article_url && !draft.article_url.startsWith('manual:') && (
@@ -105,7 +105,7 @@ export default function Editor() {
                 { onSuccess: () => ok(`Scheduled for ${fmtDateTime(new Date(slot).toISOString())}`), onError: fail })}>
               Schedule
             </button>
-            {draft.scheduled_at && (
+            {(draft.scheduled_at || draft.status === 'approved') && (
               <button className="btn ghost" disabled={busy}
                 onClick={() => schedule.mutate({ id: draft.id, scheduled_at: null },
                   { onSuccess: () => ok('Unscheduled'), onError: fail })}>
