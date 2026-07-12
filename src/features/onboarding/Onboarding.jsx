@@ -15,6 +15,7 @@ export default function Onboarding() {
   const [time, setTime] = useState(() => utcHHMMToLocal('12:00'));
   const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState('');
+  const [justConnected] = useState(() => params.get('linkedin') === 'connected');
 
   useEffect(() => {
     if (params.get('linkedin') === 'error') setError(`LinkedIn connection failed: ${params.get('reason') || 'unknown error'}`);
@@ -46,7 +47,7 @@ export default function Onboarding() {
     setStep(st => Math.max(0, st - 1));
   }
 
-  const connected = !!s?.linkedin?.connected;
+  const connected = !!s?.linkedin?.connected || justConnected;
   const steps = [
     <div key="0">
       <h1>What do you post about?</h1>
