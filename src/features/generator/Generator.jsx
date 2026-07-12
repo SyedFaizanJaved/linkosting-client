@@ -55,7 +55,11 @@ export default function Generator() {
   }
 
   function discard(id) {
-    del.mutate(id, { onSuccess: () => setSaved(s => s.filter(d => d.id !== id)) });
+    setError('');
+    del.mutate(id, {
+      onSuccess: () => setSaved(s => s.filter(d => d.id !== id)),
+      onError: e => setError(e.message),
+    });
   }
 
   return (
