@@ -4,15 +4,27 @@ import {
   useDraft, useSaveDraft, useApproveDraft, useScheduleDraft,
   usePublishDraft, useRegenerateDraft, useSaveMetrics,
 } from '../drafts/hooks.js';
-import { fmtDateTime } from '../../lib/format.js';
+import { useSettings } from '../settings/useSettings.js';
+import { fmtDateTime, utcHHMMToLocal, nowLocalInputValue } from '../../lib/format.js';
+import ConfirmButton from '../../components/ConfirmButton.jsx';
+import Feedback from '../../components/Feedback.jsx';
+
+function defaultSlotIso(defaultPostTime) {
+  const [h, m] = (defaultPostTime || '12:00').split(':').map(Number);
+  const d = new Date();
+  d.setUTCHours(h, m, 0, 0);
+  if (d < new Date()) d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString();
+}
 
 export default function Editor() {
   const { id } = useParams();
   const { data: draft, isLoading, error } = useDraft(id);
+  const { data: settings } = useSettings();
   const [text, setText] = useState('');
   const [slot, setSlot] = useState('');
   const [metrics, setMetrics] = useState({ impressions: '', reactions: '', comments: '' });
-  const [msg, setMsg] = useState('');
+  const [msg, setMsg] = useState(null);
 
   const save = useSaveDraft();
   const approve = useApproveDraft();
@@ -36,16 +48,25 @@ export default function Editor() {
   if (!draft) return <p className="empty">No draft yet. One is generated every morning, or create one in the Generator.</p>;
 
   const locked = draft.status === 'posted';
-  const opts = { onSuccess: () => setMsg('Done'), onError: e => setMsg(e.message) };
-  const withSave = fn => save.mutate({ id: draft.id, edited_content: text }, { onSuccess: fn, onError: e => setMsg(e.message) });
+  const dirty = text !== (draft.edited_content || draft.content || '');
+  const effectiveSlotIso = draft.scheduled_at || defaultSlotIso(settings?.default_post_time);
+  const slotLabel = fmtDateTime(effectiveSlotIso);
+  const ok = t => setMsg({ text: t, kind: 'ok' });
+  const fail = e => setMsg({ text: e.message, kind: 'error' });
+  const withSave = fn => save.mutate({ id: draft.id, edited_content: text }, { onSuccess: fn, onError: fail });
 
   return (
     <div className="screen" style={{ maxWidth: 760 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 20 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 20, flexWrap: 'wrap' }}>
         <h1 style={{ fontSize: 22 }}>Draft #{draft.id}</h1>
         <span className={`badge ${draft.status}`}>{draft.status}</span>
         {draft.scheduled_at && <span className="muted">→ {fmtDateTime(draft.scheduled_at)}</span>}
       </div>
+      {draft.status === 'approved' && (
+        <p className="muted" style={{ margin: '6px 0 0' }}>
+          Will post {slotLabel}{draft.scheduled_at ? ' — Unschedule to stop it.' : ` (your default time${settings?.default_post_time ? `, ${utcHHMMToLocal(settings.default_post_time)}` : ''}).`}
+        </p>
+      )}
       {draft.article_url && !draft.article_url.startsWith('manual:') && (
         <p className="muted" style={{ margin: '6px 0 0' }}>
           Source: <a href={draft.article_url} target="_blank" rel="noreferrer">{draft.article_title}</a>
@@ -53,25 +74,43 @@ export default function Editor() {
       )}
 
       <div className="card" style={{ marginTop: 14 }}>
-        <textarea className="textarea" rows={14} value={text} onChange={e => setText(e.target.value)}
+        <textarea className="textarea" rows={14} value={text}
+          onChange={e => { setText(e.target.value); setMsg(null); }}
           disabled={locked} style={{ border: 'none', padding: 0 }} />
       </div>
 
       {!locked && (
         <>
           <div className="actions">
-            <button className="btn ghost" disabled={busy} onClick={() => save.mutate({ id: draft.id, edited_content: text }, opts)}>Save edit</button>
-            <button className="btn" disabled={busy} onClick={() => withSave(() => approve.mutate(draft.id, opts))}>Approve</button>
-            <button className="btn ink" disabled={busy} onClick={() => withSave(() => publish.mutate(draft.id, opts))}>Post now</button>
-            <button className="btn ghost" disabled={busy} onClick={() => regenerate.mutate(draft.id, opts)}>Regenerate</button>
+            <button className="btn ghost" disabled={busy}
+              onClick={() => save.mutate({ id: draft.id, edited_content: text }, { onSuccess: () => ok('Saved'), onError: fail })}>
+              Save edit
+            </button>
+            <button className="btn" disabled={busy}
+              onClick={() => withSave(() => approve.mutate(draft.id, { onSuccess: () => ok(`Approved — will post ${slotLabel}`), onError: fail }))}>
+              Approve · posts {slotLabel}
+            </button>
+            <ConfirmButton className="btn ink" disabled={busy}
+              label="Post now" confirmLabel="Confirm — post to LinkedIn"
+              onConfirm={() => withSave(() => publish.mutate(draft.id, { onSuccess: () => ok('Posted to LinkedIn'), onError: fail }))} />
+            <ConfirmButton className="btn ghost" disabled={busy} skipConfirm={!dirty}
+              label="Regenerate" confirmLabel="Discard edits and regenerate?"
+              onConfirm={() => regenerate.mutate(draft.id, { onSuccess: () => ok('Regenerated'), onError: fail })} />
           </div>
           <div className="actions">
-            <input className="input" type="datetime-local" value={slot} onChange={e => setSlot(e.target.value)} style={{ width: 230 }} />
+            <input className="input" type="datetime-local" value={slot} min={nowLocalInputValue()}
+              onChange={e => setSlot(e.target.value)} style={{ width: 230 }} />
             <button className="btn ghost" disabled={busy || !slot}
-              onClick={() => schedule.mutate({ id: draft.id, scheduled_at: new Date(slot).toISOString() }, opts)}>Schedule</button>
+              onClick={() => schedule.mutate({ id: draft.id, scheduled_at: new Date(slot).toISOString() },
+                { onSuccess: () => ok(`Scheduled for ${fmtDateTime(new Date(slot).toISOString())}`), onError: fail })}>
+              Schedule
+            </button>
             {draft.scheduled_at && (
               <button className="btn ghost" disabled={busy}
-                onClick={() => schedule.mutate({ id: draft.id, scheduled_at: null }, opts)}>Unschedule</button>
+                onClick={() => schedule.mutate({ id: draft.id, scheduled_at: null },
+                  { onSuccess: () => ok('Unscheduled'), onError: fail })}>
+                Unschedule
+              </button>
             )}
           </div>
         </>
@@ -95,7 +134,9 @@ export default function Editor() {
                 ...(metrics.impressions !== '' && { impressions: Number(metrics.impressions) }),
                 ...(metrics.reactions !== '' && { reactions: Number(metrics.reactions) }),
                 ...(metrics.comments !== '' && { comments: Number(metrics.comments) }),
-              }, opts)}>Save metrics</button>
+              }, { onSuccess: () => ok('Metrics saved'), onError: fail })}>
+              Save metrics
+            </button>
           </div>
           {draft.linkedin_post_id && (
             <p style={{ marginTop: 12 }}>
@@ -104,7 +145,7 @@ export default function Editor() {
           )}
         </div>
       )}
-      <p className="muted">{msg}</p>
+      <Feedback msg={msg?.text} kind={msg?.kind} />
     </div>
   );
 }
