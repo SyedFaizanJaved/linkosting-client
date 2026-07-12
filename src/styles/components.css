@@ -90,6 +90,8 @@
   background: linear-gradient(140deg, var(--accent), var(--accent2)); }
 .auth-brand-inner { position: relative; z-index: 1; max-width: 400px; }
 .auth-brand .brand-name { color: #fff; }
+.auth-brand .brand-mark, .auth-card .brand-mark { width: 48px; height: 48px; border-radius: 14px; }
+.auth-brand .brand-name, .auth-card .brand-name { font-size: 26px; }
 .auth-brand h2 { font-family: 'Bricolage Grotesque', sans-serif; font-size: 36px; line-height: 1.1;
   font-weight: 800; letter-spacing: -.02em; margin: 26px 0 14px; color: #fff; }
 .auth-brand p { font-size: 15.5px; line-height: 1.65; font-weight: 500; opacity: .82; margin: 0; }
