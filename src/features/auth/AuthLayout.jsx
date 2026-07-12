@@ -4,11 +4,11 @@ export default function AuthLayout({ title, subtitle, children }) {
       <div className="auth-brand">
         <span className="auth-orb" style={{ width: 300, height: 300, background: '#fff', top: -80, right: -60 }} />
         <span className="auth-orb" style={{ width: 240, height: 240, background: '#000', bottom: -70, left: -40 }} />
+        <div className="brand" style={{ padding: 0, cursor: 'default' }}>
+          <img className="brand-mark" src="/logo.png" alt="Linkosting" />
+          <span className="brand-name">Linkosting</span>
+        </div>
         <div className="auth-brand-inner">
-          <div className="brand" style={{ padding: 0, cursor: 'default' }}>
-            <img className="brand-mark" src="/logo.png" alt="Linkosting" />
-            <span className="brand-name">Linkosting</span>
-          </div>
           <h2>Post with less effort.</h2>
           <p>Draft in your voice, schedule a week ahead, and let approval-by-email keep you fully in control of what goes live.</p>
           <ul className="auth-points">
