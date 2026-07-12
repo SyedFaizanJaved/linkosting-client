@@ -104,7 +104,6 @@
   background: rgba(255,255,255,.22); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8.5l3.2 3.2L13 4.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: center; }
 .auth-orb { position: absolute; border-radius: 50%; filter: blur(46px); opacity: .32; pointer-events: none; }
-.auth-theme-toggle { position: fixed; top: 18px; right: 18px; z-index: 5; }
 .auth-form-side { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 28px; background: var(--canvas); }
 .auth-card { width: 100%; max-width: 372px; }
 .auth-card h1 { font-size: 25px; }

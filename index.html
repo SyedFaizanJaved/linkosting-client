@@ -10,6 +10,21 @@
     <title>Linkosting</title>
   </head>
   <body>
+    <script>
+      // Apply the saved (or system) theme before first paint so every page —
+      // including the auth screens rendered before React mounts — is themed
+      // correctly with no light/dark flash.
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t !== 'light' && t !== 'dark') {
+            t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          document.body.dataset.theme = t;
+          localStorage.setItem('theme', t);
+        } catch (e) {}
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/app/main.jsx"></script>
   </body>
