@@ -1,5 +1,14 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { api, setToken } from '../../lib/api.js';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { api, setToken, clearToken } from '../../lib/api.js';
+
+export function useLogout() {
+  const qc = useQueryClient();
+  return () => {
+    clearToken();
+    qc.clear();               // drop all cached server state so the next session starts clean
+    window.location.href = '/login';
+  };
+}
 
 export function useLogin() {
   return useMutation({

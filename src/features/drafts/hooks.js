@@ -37,3 +37,4 @@ export const useScheduleDraft = () => useDraftMutation(({ id, scheduled_at }) =>
 export const usePublishDraft = () => useDraftMutation(id => api(`/api/drafts/${id}/publish`, { method: 'POST' }));
 export const useRegenerateDraft = () => useDraftMutation(id => api(`/api/drafts/${id}/regenerate`, { method: 'POST' }));
 export const useSaveMetrics = () => useDraftMutation(({ id, ...metrics }) => api(`/api/drafts/${id}/metrics`, { method: 'PUT', body: metrics }));
+export const useDeleteDraft = () => useDraftMutation(id => api(`/api/drafts/${id}`, { method: 'DELETE' }));

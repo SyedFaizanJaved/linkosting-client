@@ -29,6 +29,11 @@ export default function Onboarding() {
     });
   }
 
+  function back() {
+    setError('');
+    setStep(s => Math.max(0, s - 1));
+  }
+
   const steps = [
     <div key="0">
       <h1>What do you post about?</h1>
@@ -44,12 +49,16 @@ export default function Onboarding() {
       <p className="muted" style={{ margin: '8px 0 16px' }}>Default slot for approved posts without an explicit schedule. Stored in UTC.</p>
       <div className="field"><label>Default post time (UTC)</label>
         <input className="input" type="time" value={time} onChange={e => setTime(e.target.value)} /></div>
-      <button className="btn" disabled={save.isPending} onClick={() => next({ default_post_time: time })}>Continue</button>
+      <div className="actions">
+        <button className="btn ghost" disabled={save.isPending} onClick={back}>← Back</button>
+        <button className="btn" disabled={save.isPending} onClick={() => next({ default_post_time: time })}>Continue</button>
+      </div>
     </div>,
     <div key="2">
       <h1>Connect LinkedIn</h1>
       <p className="muted" style={{ margin: '8px 0 16px' }}>Needed to publish. You can also do this later in Settings.</p>
       <div className="actions">
+        <button className="btn ghost" disabled={save.isPending} onClick={back}>← Back</button>
         <button className="btn" onClick={connectLinkedIn}>Connect LinkedIn</button>
         <button className="btn ghost" disabled={save.isPending} onClick={() => next({}, true)}>Finish{s?.linkedin?.connected ? '' : ' without connecting'}</button>
       </div>

@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
+import { useLogout } from '../../features/auth/useAuth.js';
 
 const NAV = [
   ['/', 'Dashboard'], ['/generate', 'AI Generator'], ['/drafts/today', 'Draft Editor'],
@@ -8,6 +9,7 @@ const NAV = [
 
 export default function Sidebar({ linkedinConnected }) {
   const navigate = useNavigate();
+  const logout = useLogout();
   return (
     <aside className="sidebar">
       <div className="brand" onClick={() => navigate('/')}>
@@ -29,6 +31,10 @@ export default function Sidebar({ linkedinConnected }) {
             <span className="muted" style={{ fontSize: 12 }}>{linkedinConnected ? 'Connected' : 'Not connected'}</span>
             <span style={{ marginLeft: 'auto', width: 7, height: 7, borderRadius: '50%', background: linkedinConnected ? '#2BB673' : 'var(--red)' }} />
           </div>
+          <button className="btn ghost" onClick={logout}
+            style={{ width: '100%', marginTop: 10, justifyContent: 'center', fontSize: 13 }}>
+            Sign out
+          </button>
         </div>
       </div>
     </aside>
