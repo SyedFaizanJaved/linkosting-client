@@ -13,7 +13,7 @@ export default function Sidebar({ linkedinConnected }) {
   return (
     <aside className="sidebar">
       <div className="brand" onClick={() => navigate('/')}>
-        <span className="brand-mark">L</span>
+        <img className="brand-mark" src="/logo.png" alt="Linkosting" />
         <span className="brand-name">Linkosting</span>
       </div>
       <nav className="nav">

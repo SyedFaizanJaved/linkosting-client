@@ -3,9 +3,8 @@
 .sidebar { width: 238px; flex: none; display: flex; flex-direction: column;
   padding: 24px 16px 18px; position: sticky; top: 0; height: 100vh; }
 .brand { display: flex; align-items: center; gap: 10px; padding: 2px 10px 22px; cursor: pointer; }
-.brand-mark { width: 32px; height: 32px; border-radius: 10px; background: var(--accent);
-  display: flex; align-items: center; justify-content: center; box-shadow: var(--accSh);
-  color: #fff; font-weight: 800; font-size: 15px; }
+.brand-mark { width: 32px; height: 32px; border-radius: 10px; object-fit: cover;
+  box-shadow: var(--accSh); display: block; }
 .brand-name { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 18px; }
 .nav { display: flex; flex-direction: column; gap: 3px; }
 .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 11px;

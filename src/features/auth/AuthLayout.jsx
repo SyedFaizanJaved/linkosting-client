@@ -6,7 +6,7 @@ export default function AuthLayout({ title, subtitle, children }) {
         <span className="auth-orb" style={{ width: 240, height: 240, background: '#000', bottom: -70, left: -40 }} />
         <div className="auth-brand-inner">
           <div className="brand" style={{ padding: 0, cursor: 'default' }}>
-            <span className="brand-mark" style={{ background: 'rgba(255,255,255,.2)' }}>L</span>
+            <img className="brand-mark" src="/logo.png" alt="Linkosting" />
             <span className="brand-name">Linkosting</span>
           </div>
           <h2>Post with less effort.</h2>
@@ -21,7 +21,7 @@ export default function AuthLayout({ title, subtitle, children }) {
       <div className="auth-form-side">
         <div className="auth-card screen">
           <div className="brand" style={{ padding: '0 0 18px', cursor: 'default', justifyContent: 'flex-start' }}>
-            <span className="brand-mark">L</span>
+            <img className="brand-mark" src="/logo.png" alt="Linkosting" />
             <span className="brand-name">Linkosting</span>
           </div>
           <h1>{title}</h1>

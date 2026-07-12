@@ -68,7 +68,7 @@ export default function Onboarding() {
   return (
     <div className="login-wrap screen" style={{ maxWidth: 480 }}>
       <div className="brand" style={{ justifyContent: 'center' }}>
-        <span className="brand-mark">L</span><span className="brand-name">Linkosting</span>
+        <img className="brand-mark" src="/logo.png" alt="Linkosting" /><span className="brand-name">Linkosting</span>
       </div>
       <div className="card">
         <p className="faint" style={{ fontSize: 12, fontWeight: 800, margin: '0 0 10px' }}>STEP {step + 1} OF 3</p>
