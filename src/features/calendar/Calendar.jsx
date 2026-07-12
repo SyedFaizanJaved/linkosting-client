@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDrafts, useScheduleDraft } from '../drafts/hooks.js';
+import { nowLocalInputValue } from '../../lib/format.js';
+import Feedback from '../../components/Feedback.jsx';
 
 function monthDays(year, month) {
   const first = new Date(year, month, 1);
@@ -17,7 +19,8 @@ export default function Calendar() {
   const navigate = useNavigate();
   const [cursor, setCursor] = useState(() => { const n = new Date(); return { y: n.getFullYear(), m: n.getMonth() }; });
   const [slots, setSlots] = useState({});
-  const { data: drafts } = useDrafts();
+  const [scheduleError, setScheduleError] = useState('');
+  const { data: drafts, isLoading, error } = useDrafts();
   const schedule = useScheduleDraft();
 
   const days = monthDays(cursor.y, cursor.m);
@@ -31,10 +34,14 @@ export default function Calendar() {
   const unscheduled = (drafts || []).filter(d => !d.scheduled_at && (d.status === 'pending' || d.status === 'approved'));
   const monthName = new Date(cursor.y, cursor.m).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
 
+  if (isLoading) return <div className="skeleton" style={{ height: 420, marginTop: 20 }} />;
+  if (error) return <p className="error-text" style={{ marginTop: 20 }}>{error.message}</p>;
+
   return (
     <div className="screen">
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 20 }}>
         <h1>{monthName}</h1>
+        <span className="faint" style={{ fontSize: 12, fontWeight: 700 }}>Times are your local timezone.</span>
         <span style={{ flex: 1 }} />
         <button className="btn ghost" onClick={() => setCursor(c => (c.m === 0 ? { y: c.y - 1, m: 11 } : { y: c.y, m: c.m - 1 }))}>←</button>
         <button className="btn ghost" onClick={() => setCursor(c => (c.m === 11 ? { y: c.y + 1, m: 0 } : { y: c.y, m: c.m + 1 }))}>→</button>
@@ -73,14 +80,21 @@ export default function Calendar() {
               </span>
               <span className={`badge ${d.status}`} style={{ marginTop: 4, display: 'inline-block' }}>{d.status}</span>
             </span>
-            <input className="input" type="datetime-local" style={{ width: 220 }}
+            <input className="input" type="datetime-local" style={{ width: 220 }} min={nowLocalInputValue()}
               value={slots[d.id] || ''} onChange={e => setSlots({ ...slots, [d.id]: e.target.value })} />
             <button className="btn ghost" disabled={schedule.isPending || !slots[d.id]}
-              onClick={() => schedule.mutate({ id: d.id, scheduled_at: new Date(slots[d.id]).toISOString() })}>
+              onClick={() => schedule.mutate(
+                { id: d.id, scheduled_at: new Date(slots[d.id]).toISOString() },
+                {
+                  onSuccess: () => { setScheduleError(''); setSlots(sl => ({ ...sl, [d.id]: '' })); },
+                  onError: e => setScheduleError(e.message),
+                }
+              )}>
               Schedule
             </button>
           </div>
         ))}
+        <Feedback msg={scheduleError} kind="error" />
       </div>
     </div>
   );

@@ -2,19 +2,27 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSettings, useSaveSettings } from '../settings/useSettings.js';
 import { useAnalytics } from '../analytics/useAnalytics.js';
+import Feedback from '../../components/Feedback.jsx';
 
 export default function Topics() {
   const navigate = useNavigate();
-  const { data: s } = useSettings();
+  const { data: s, isLoading, error } = useSettings();
   const { data: a } = useAnalytics();
   const save = useSaveSettings();
   const [newTopic, setNewTopic] = useState('');
+  const [saveError, setSaveError] = useState('');
 
   const topics = (s?.topics || '').split(',').map(t => t.trim()).filter(Boolean);
   const counts = Object.fromEntries((a?.perTopic || []).map(t => [t.topic, t.count]));
 
+  if (isLoading) return <div className="skeleton" style={{ height: 260, marginTop: 20 }} />;
+  if (error) return <p className="error-text" style={{ marginTop: 20 }}>{error.message}</p>;
+
   function saveTopics(list) {
-    save.mutate({ topics: list.join(', ') });
+    save.mutate({ topics: list.join(', ') }, {
+      onSuccess: () => setSaveError(''),
+      onError: e => setSaveError(e.message),
+    });
   }
 
   return (
@@ -31,6 +39,7 @@ export default function Topics() {
         <input className="input" placeholder="Add a topic…" value={newTopic} onChange={e => setNewTopic(e.target.value)} style={{ maxWidth: 280 }} />
         <button className="btn" type="submit" disabled={save.isPending || !newTopic.trim()}>Add</button>
       </form>
+      <Feedback msg={saveError} kind="error" />
 
       <div style={{ display: 'grid', gap: 10, marginTop: 16 }}>
         {topics.length === 0 && <p className="empty">No topics yet — add your first.</p>}

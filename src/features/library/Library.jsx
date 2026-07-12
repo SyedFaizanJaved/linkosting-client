@@ -12,7 +12,7 @@ export default function Library() {
   const [topic, setTopic] = useState('');
   const [qInput, setQInput] = useState('');
   const [q, setQ] = useState('');
-  const { data: drafts, isLoading } = useDrafts({ status, topic, q });
+  const { data: drafts, isLoading, error } = useDrafts({ status, topic, q });
   const { data: s } = useSettings();
   const topics = (s?.topics || '').split(',').map(t => t.trim()).filter(Boolean);
 
@@ -34,7 +34,8 @@ export default function Library() {
 
       <div className="card" style={{ marginTop: 14, padding: '8px 20px' }}>
         {isLoading && <div className="skeleton" style={{ height: 200, margin: '12px 0' }} />}
-        {!isLoading && (!drafts || drafts.length === 0) && <p className="empty">No posts match.</p>}
+        {error && <p className="error-text" style={{ padding: '16px 0' }}>{error.message}</p>}
+        {!isLoading && !error && (!drafts || drafts.length === 0) && <p className="empty">No posts match.</p>}
         {drafts?.length > 0 && (
           <table className="table">
             <thead>

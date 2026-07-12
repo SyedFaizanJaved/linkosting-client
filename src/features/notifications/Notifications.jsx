@@ -5,13 +5,14 @@ const ICONS = { review: '📝', posted: '✅', token: '⚠️' };
 
 export default function Notifications() {
   const navigate = useNavigate();
-  const { data: items, isLoading } = useNotifications();
+  const { data: items, isLoading, error } = useNotifications();
 
   return (
     <div className="screen" style={{ maxWidth: 720 }}>
       <h1 style={{ marginTop: 20 }}>Notifications</h1>
       {isLoading && <div className="skeleton" style={{ height: 160, marginTop: 16 }} />}
-      {items?.length === 0 && <p className="empty">All caught up.</p>}
+      {error && <p className="error-text" style={{ marginTop: 16 }}>{error.message}</p>}
+      {!isLoading && !error && items?.length === 0 && <p className="empty">All caught up.</p>}
       <div style={{ marginTop: 8 }}>
         {items?.map((n, i) => (
           <div key={i} className="row-item"
