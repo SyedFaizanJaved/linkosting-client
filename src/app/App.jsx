@@ -4,6 +4,9 @@ import Layout from './layout/Layout.jsx';
 import { getToken } from '../lib/api.js';
 import { useSettings } from '../features/settings/useSettings.js';
 import Login from '../features/auth/Login.jsx';
+import Register from '../features/auth/Register.jsx';
+import ForgotPassword from '../features/auth/ForgotPassword.jsx';
+import ResetPassword from '../features/auth/ResetPassword.jsx';
 import Onboarding from '../features/onboarding/Onboarding.jsx';
 import Dashboard from '../features/dashboard/Dashboard.jsx';
 import Generator from '../features/generator/Generator.jsx';
@@ -31,6 +34,9 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot" element={<ForgotPassword />} />
+          <Route path="/reset" element={<ResetPassword />} />
           <Route path="/onboarding" element={<Guard><Onboarding /></Guard>} />
           <Route element={<Guard><OnboardGate><Layout /></OnboardGate></Guard>}>
             <Route path="/" element={<Dashboard />} />

@@ -83,3 +83,27 @@
   padding: 4px 7px; font-weight: 700; font-size: 11px; cursor: pointer;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .login-wrap { max-width: 360px; margin: 10vh auto; }
+
+/* auth split-panel */
+.auth-split { display: flex; min-height: 100vh; }
+.auth-brand { flex: 1.1; position: relative; overflow: hidden; display: flex; flex-direction: column;
+  justify-content: center; padding: 56px 48px; color: #fff;
+  background: linear-gradient(140deg, var(--accent), var(--accent2)); }
+.auth-brand-inner { position: relative; z-index: 1; max-width: 400px; }
+.auth-brand .brand-name { color: #fff; }
+.auth-brand h2 { font-family: 'Bricolage Grotesque', sans-serif; font-size: 36px; line-height: 1.1;
+  font-weight: 800; letter-spacing: -.02em; margin: 26px 0 14px; color: #fff; }
+.auth-brand p { font-size: 15.5px; line-height: 1.65; font-weight: 500; opacity: .82; margin: 0; }
+.auth-points { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 12px; }
+.auth-points li { display: flex; align-items: center; gap: 11px; font-size: 14px; font-weight: 600; opacity: .92; }
+.auth-points li::before { content: ""; width: 20px; height: 20px; border-radius: 7px; flex: none;
+  background: rgba(255,255,255,.22); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8.5l3.2 3.2L13 4.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: center; }
+.auth-orb { position: absolute; border-radius: 50%; filter: blur(46px); opacity: .32; pointer-events: none; }
+.auth-form-side { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 28px; background: var(--canvas); }
+.auth-card { width: 100%; max-width: 372px; }
+.auth-card h1 { font-size: 25px; }
+.auth-links { display: flex; justify-content: space-between; gap: 12px; margin-top: 16px; font-size: 13.5px; font-weight: 700; }
+.auth-note { font-size: 13px; font-weight: 600; color: var(--sub); line-height: 1.55; }
+.ok-text { color: var(--green); font-size: 13.5px; font-weight: 600; }
+@media (max-width: 780px) { .auth-brand { display: none; } .auth-form-side { flex: 1; } }
