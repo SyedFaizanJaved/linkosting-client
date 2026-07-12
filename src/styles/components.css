@@ -106,3 +106,20 @@
 .auth-note { font-size: 13px; font-weight: 600; color: var(--sub); line-height: 1.55; }
 .ok-text { color: var(--green); font-size: 13.5px; font-weight: 600; }
 @media (max-width: 780px) { .auth-brand { display: none; } .auth-form-side { flex: 1; } }
+
+/* mobile */
+.menu-btn { display: none; }
+.table-wrap { overflow-x: auto; }
+@media (max-width: 880px) {
+  .menu-btn { display: flex; }
+  .sidebar { position: fixed; left: 0; top: 0; z-index: 50; background: var(--canvas);
+    transform: translateX(-100%); transition: transform .2s ease; box-shadow: var(--sh-lg); }
+  .sidebar.open { transform: translateX(0); }
+  .nav-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, .3); z-index: 40; }
+  .main { padding: 18px 14px 40px; }
+  .topbar-title { width: auto; }
+  .tiles { grid-template-columns: 1fr 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .cal-grid { overflow-x: auto; grid-template-columns: repeat(7, minmax(96px, 1fr)); }
+  .table th, .table td { white-space: nowrap; }
+}

@@ -37,28 +37,30 @@ export default function Library() {
         {error && <p className="error-text" style={{ padding: '16px 0' }}>{error.message}</p>}
         {!isLoading && !error && (!drafts || drafts.length === 0) && <p className="empty">No posts match.</p>}
         {drafts?.length > 0 && (
-          <table className="table">
-            <thead>
-              <tr><th>Date</th><th>Post</th><th>Topic</th><th>Status</th><th>Link</th></tr>
-            </thead>
-            <tbody>
-              {drafts.map(d => (
-                <tr key={d.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/drafts/${d.id}`)}>
-                  <td className="muted">{fmtDate(d.created_at)}</td>
-                  <td style={{ maxWidth: 380, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}>
-                    {(d.edited_content || d.content).split('\n')[0]}
-                  </td>
-                  <td className="muted">{d.topic || '—'}</td>
-                  <td><span className={`badge ${d.status}`}>{d.status}</span></td>
-                  <td onClick={e => e.stopPropagation()}>
-                    {d.linkedin_post_id && (
-                      <a href={`https://www.linkedin.com/feed/update/${d.linkedin_post_id}/`} target="_blank" rel="noreferrer">View</a>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="table-wrap">
+            <table className="table">
+              <thead>
+                <tr><th>Date</th><th>Post</th><th>Topic</th><th>Status</th><th>Link</th></tr>
+              </thead>
+              <tbody>
+                {drafts.map(d => (
+                  <tr key={d.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/drafts/${d.id}`)}>
+                    <td className="muted">{fmtDate(d.created_at)}</td>
+                    <td style={{ maxWidth: 380, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}>
+                      {(d.edited_content || d.content).split('\n')[0]}
+                    </td>
+                    <td className="muted">{d.topic || '—'}</td>
+                    <td><span className={`badge ${d.status}`}>{d.status}</span></td>
+                    <td onClick={e => e.stopPropagation()}>
+                      {d.linkedin_post_id && (
+                        <a href={`https://www.linkedin.com/feed/update/${d.linkedin_post_id}/`} target="_blank" rel="noreferrer">View</a>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

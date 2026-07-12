@@ -7,7 +7,7 @@ const TITLES = {
   '/topics': 'Topics', '/analytics': 'Analytics', '/notifications': 'Notifications', '/settings': 'Settings',
 };
 
-export default function Topbar() {
+export default function Topbar({ onMenu }) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { theme, toggle } = useTheme();
@@ -15,6 +15,7 @@ export default function Topbar() {
   const title = TITLES[pathname] || (pathname.startsWith('/drafts') ? 'Draft Editor' : 'Linkosting');
   return (
     <div className="topbar">
+      <span className="icon-btn menu-btn" title="Menu" onClick={onMenu}>☰</span>
       <span className="topbar-title">{title}</span>
       <span style={{ flex: 1 }} />
       <span className="icon-btn" title="Toggle theme" onClick={toggle}>{theme === 'light' ? '🌙' : '☀️'}</span>
