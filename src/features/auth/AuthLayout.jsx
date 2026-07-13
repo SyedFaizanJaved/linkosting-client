@@ -20,10 +20,7 @@ export default function AuthLayout({ title, subtitle, children }) {
       </div>
       <div className="auth-form-side">
         <div className="auth-card screen">
-          <div className="brand" style={{ padding: '0 0 18px', cursor: 'default', justifyContent: 'flex-start' }}>
-            <img className="brand-mark" src="/logo.png" alt="Linkosting" />
-            <span className="brand-name">Linkosting</span>
-          </div>
+
           <h1>{title}</h1>
           {subtitle && <p className="muted" style={{ margin: '6px 0 20px' }}>{subtitle}</p>}
           {children}

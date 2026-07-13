@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGenerate } from './useGenerate.js';
 import { useCreateDraft, useDeleteDraft } from '../drafts/hooks.js';
 import { useSettings, useSaveSettings } from '../settings/useSettings.js';
+import { PREBUILT_TOPICS } from './prebuilt.js';
 
 const TONES = ['professional', 'friendly', 'bold', 'analytical'];
 const LENGTHS = ['short', 'medium', 'long'];
@@ -28,13 +29,19 @@ export default function Generator() {
   const saveSettings = useSaveSettings();
   const working = busy || generate.isPending;
 
-  async function run() {
+  // Optional overrides let a prebuilt topic generate immediately without waiting
+  // on setState to flush (prebuilt click passes its own prompt/topic directly).
+  async function run(overridePrompt, overrideTopic) {
+    const p = (overridePrompt ?? prompt).trim();
+    const t = (overrideTopic ?? topic).trim();
+    if (!p) return;
+    if (overridePrompt !== undefined) setPrompt(p);
+    if (overrideTopic !== undefined) setTopic(t);
     setError('');
     setSaved([]);
     setBusy(true);
     try {
-      const { variants } = await generate.mutateAsync({ prompt, tone, length });
-      const t = topic.trim();
+      const { variants } = await generate.mutateAsync({ prompt: p, tone, length });
       // Persist a newly-typed topic so it's reusable in the future.
       if (t && !topics.includes(t)) {
         await saveSettings.mutateAsync({ topics: [...topics, t].join(', ') }).catch(() => {});
@@ -80,7 +87,7 @@ export default function Generator() {
             value={topic} onChange={e => setTopic(e.target.value)} />
           <datalist id="gen-topics">{topics.map(t => <option key={t} value={t} />)}</datalist>
           <span style={{ flex: 1 }} />
-          <button className="btn" disabled={working || !prompt.trim()} onClick={run}>
+          <button className="btn" disabled={working || !prompt.trim()} onClick={() => run()}>
             {working ? 'Writing…' : '✦ Generate'}
           </button>
         </div>
@@ -112,9 +119,22 @@ export default function Generator() {
       )}
 
       {!working && !error && saved.length === 0 && (
-        <div className="empty">
-          <p style={{ fontWeight: 700, color: 'var(--ink)' }}>Your drafts will appear here</p>
-          <p style={{ fontSize: 12.5 }}>Each idea becomes three drafts, saved automatically.</p>
+        <div style={{ marginTop: 28 }}>
+          <p className="muted" style={{ textAlign: 'center', margin: '0 0 14px' }}>
+            Or start from a proven topic — one click drafts three posts.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
+            {PREBUILT_TOPICS.map(pb => (
+              <div key={pb.topic} className="card prebuilt-card" style={{ cursor: 'pointer' }}
+                onClick={() => run(pb.prompt, pb.topic)}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ fontSize: 22 }}>{pb.emoji}</span>
+                  <span style={{ fontWeight: 800, fontSize: 15 }}>{pb.title}</span>
+                </div>
+                <p className="faint" style={{ margin: '8px 0 0', fontSize: 12.5, lineHeight: 1.5 }}>{pb.prompt}</p>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

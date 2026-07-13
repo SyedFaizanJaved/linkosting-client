@@ -91,8 +91,8 @@
 .auth-brand-inner { position: relative; z-index: 1; max-width: 400px; }
 .auth-brand .brand-name { color: #fff; }
 .auth-brand .brand { position: absolute; top: 44px; left: 48px; z-index: 1; padding: 0; gap: 18px; }
-.auth-brand .brand-mark { width: 96px; height: 96px; border-radius: 26px; }
-.auth-brand .brand-name { font-size: 54px; }
+.auth-brand .brand-mark { width: 56px; height: 56px; border-radius: 26px; }
+.auth-brand .brand-name { font-size: 40px; }
 .auth-card .brand-mark { width: 48px; height: 48px; border-radius: 14px; }
 .auth-card .brand-name { font-size: 26px; }
 .auth-brand h2 { font-family: 'Bricolage Grotesque', sans-serif; font-size: 36px; line-height: 1.1;
@@ -111,6 +111,10 @@
 .auth-note { font-size: 13px; font-weight: 600; color: var(--sub); line-height: 1.55; }
 .ok-text { color: var(--green); font-size: 13.5px; font-weight: 600; }
 @media (max-width: 780px) { .auth-brand { display: none; } .auth-form-side { flex: 1; } }
+
+/* prebuilt starter topics */
+.prebuilt-card { transition: transform .15s, border-color .15s, box-shadow .15s; }
+.prebuilt-card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: var(--sh-lg); }
 
 /* mobile */
 .menu-btn { display: none; }
