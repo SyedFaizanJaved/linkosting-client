@@ -19,6 +19,7 @@ export default function Settings() {
       setForm({
         topics: s.topics, tone: s.tone, hashtags: s.hashtags,
         default_post_time: utcHHMMToLocal(s.default_post_time),
+        daily_draft_enabled: s.daily_draft_enabled,
       });
       setFeedsText(s.feeds.join('\n'));
     }
@@ -85,6 +86,12 @@ export default function Settings() {
             onChange={e => edit({ default_post_time: e.target.value })} />
           <p className="faint" style={{ fontSize: 12, margin: '6px 0 0' }}>Stored as {localHHMMToUtc(form.default_post_time)} UTC</p>
           {errors.default_post_time && <p className="field-error">{errors.default_post_time}</p>}</div>
+        <div className="field">
+          <label>
+            <input type="checkbox" checked={form.daily_draft_enabled} onChange={e => edit({ daily_draft_enabled: e.target.checked })} />
+            {' '}Email me an AI draft every morning
+          </label>
+        </div>
         <div className="actions">
           <button className="btn" type="submit" disabled={save.isPending}>{save.isPending ? 'Saving…' : 'Save'}</button>
         </div>
