@@ -8,6 +8,8 @@ import { useSettings } from '../settings/useSettings.js';
 import { fmtDateTime, nowLocalInputValue } from '../../lib/format.js';
 import ConfirmButton from '../../components/ConfirmButton.jsx';
 import Feedback from '../../components/Feedback.jsx';
+import { validate, metricSchema } from '../../lib/validation.js';
+import { toast } from '../../lib/toast.js';
 
 function defaultSlotIso(defaultPostTime) {
   const [h, m] = (defaultPostTime || '12:00').split(':').map(Number);
@@ -25,6 +27,7 @@ export default function Editor() {
   const [slot, setSlot] = useState('');
   const [metrics, setMetrics] = useState({ impressions: '', reactions: '', comments: '' });
   const [msg, setMsg] = useState(null);
+  const [metricErrors, setMetricErrors] = useState({});
 
   const save = useSaveDraft();
   const approve = useApproveDraft();
@@ -54,6 +57,23 @@ export default function Editor() {
   const ok = t => setMsg({ text: t, kind: 'ok' });
   const fail = e => setMsg({ text: e.message, kind: 'error' });
   const withSave = fn => save.mutate({ id: draft.id, edited_content: text }, { onSuccess: fn, onError: fail });
+
+  function submitMetrics() {
+    const errs = {};
+    for (const k of ['impressions', 'reactions', 'comments']) {
+      if (metrics[k] === '') continue;
+      const r = validate(metricSchema, metrics[k]);
+      if (!r.ok) errs[k] = r.errors._;
+    }
+    setMetricErrors(errs);
+    if (Object.keys(errs).length) { toast.error(Object.values(errs)[0]); return; }
+    saveMetrics.mutate({
+      id: draft.id,
+      ...(metrics.impressions !== '' && { impressions: Number(metrics.impressions) }),
+      ...(metrics.reactions !== '' && { reactions: Number(metrics.reactions) }),
+      ...(metrics.comments !== '' && { comments: Number(metrics.comments) }),
+    }, { onSuccess: () => ok('Metrics saved'), onError: fail });
+  }
 
   return (
     <div className="screen" style={{ maxWidth: 760 }}>
@@ -126,15 +146,11 @@ export default function Editor() {
                 <label>{k}</label>
                 <input className="input" type="number" min="0" style={{ width: 130 }}
                   value={metrics[k]} onChange={e => setMetrics({ ...metrics, [k]: e.target.value })} />
+                {metricErrors[k] && <p className="field-error">{metricErrors[k]}</p>}
               </div>
             ))}
             <button className="btn" style={{ alignSelf: 'flex-end' }} disabled={saveMetrics.isPending}
-              onClick={() => saveMetrics.mutate({
-                id: draft.id,
-                ...(metrics.impressions !== '' && { impressions: Number(metrics.impressions) }),
-                ...(metrics.reactions !== '' && { reactions: Number(metrics.reactions) }),
-                ...(metrics.comments !== '' && { comments: Number(metrics.comments) }),
-              }, { onSuccess: () => ok('Metrics saved'), onError: fail })}>
+              onClick={submitMetrics}>
               Save metrics
             </button>
           </div>

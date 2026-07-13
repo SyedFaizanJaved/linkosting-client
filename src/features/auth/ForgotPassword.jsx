@@ -2,13 +2,19 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AuthLayout from './AuthLayout.jsx';
 import { useForgotPassword } from './useAuth.js';
+import { validate, forgotSchema } from '../../lib/validation.js';
+import { toast } from '../../lib/toast.js';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
+  const [errors, setErrors] = useState({});
   const forgot = useForgotPassword();
 
   function submit(e) {
     e.preventDefault();
+    const { ok, errors: errs } = validate(forgotSchema, { email });
+    setErrors(errs);
+    if (!ok) { toast.error(Object.values(errs)[0]); return; }
     forgot.mutate({ email });
   }
 
@@ -28,6 +34,7 @@ export default function ForgotPassword() {
             <label htmlFor="forgot-email">Email</label>
             <input id="forgot-email" className="input" type="email" autoComplete="email"
               value={email} onChange={e => setEmail(e.target.value)} required />
+            {errors.email && <p className="field-error">{errors.email}</p>}
           </div>
           <button className="btn" type="submit" disabled={forgot.isPending} style={{ width: '100%', justifyContent: 'center' }}>
             {forgot.isPending ? 'Sending…' : 'Send reset link'}

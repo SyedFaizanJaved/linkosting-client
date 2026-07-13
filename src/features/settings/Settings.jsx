@@ -3,6 +3,8 @@ import { api } from '../../lib/api.js';
 import { useSettings, useSaveSettings } from './useSettings.js';
 import { utcHHMMToLocal, localHHMMToUtc } from '../../lib/format.js';
 import Feedback from '../../components/Feedback.jsx';
+import { validate, settingsSchema } from '../../lib/validation.js';
+import { toast } from '../../lib/toast.js';
 
 export default function Settings() {
   const { data: s, isLoading, error } = useSettings();
@@ -10,6 +12,7 @@ export default function Settings() {
   const [form, setForm] = useState(null);
   const [feedsText, setFeedsText] = useState('');
   const [msg, setMsg] = useState(null);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (s && !form) {
@@ -49,6 +52,12 @@ export default function Settings() {
 
   function submit(e) {
     e.preventDefault();
+    const { ok, errors: errs } = validate(settingsSchema, {
+      topics: form.topics, tone: form.tone, hashtags: form.hashtags,
+      default_post_time: form.default_post_time,
+    });
+    setErrors(errs);
+    if (!ok) { toast.error(Object.values(errs)[0]); return; }
     save.mutate(payload(), {
       onSuccess: () => setMsg({ text: 'Saved', kind: 'ok' }),
       onError: err => setMsg({ text: err.message, kind: 'error' }),
@@ -61,17 +70,21 @@ export default function Settings() {
 
       <form className="card" style={{ marginTop: 14 }} onSubmit={submit}>
         <div className="field"><label>Topics (comma-separated)</label>
-          <input className="input" value={form.topics} onChange={e => edit({ topics: e.target.value })} /></div>
+          <input className="input" maxLength={500} value={form.topics} onChange={e => edit({ topics: e.target.value })} />
+          {errors.topics && <p className="field-error">{errors.topics}</p>}</div>
         <div className="field"><label>Tone / persona prompt</label>
-          <textarea className="textarea" rows={3} value={form.tone} onChange={e => edit({ tone: e.target.value })} /></div>
+          <textarea className="textarea" rows={3} maxLength={600} value={form.tone} onChange={e => edit({ tone: e.target.value })} />
+          {errors.tone && <p className="field-error">{errors.tone}</p>}</div>
         <div className="field"><label>Hashtags</label>
-          <input className="input" value={form.hashtags} onChange={e => edit({ hashtags: e.target.value })} /></div>
+          <input className="input" maxLength={200} value={form.hashtags} onChange={e => edit({ hashtags: e.target.value })} />
+          {errors.hashtags && <p className="field-error">{errors.hashtags}</p>}</div>
         <div className="field"><label>RSS feeds (one per line)</label>
           <textarea className="textarea" rows={4} value={feedsText} onChange={e => { setFeedsText(e.target.value); setMsg(null); }} /></div>
         <div className="field"><label>Default post time (your local time)</label>
           <input className="input" type="time" value={form.default_post_time} style={{ width: 160 }}
             onChange={e => edit({ default_post_time: e.target.value })} />
-          <p className="faint" style={{ fontSize: 12, margin: '6px 0 0' }}>Stored as {localHHMMToUtc(form.default_post_time)} UTC</p></div>
+          <p className="faint" style={{ fontSize: 12, margin: '6px 0 0' }}>Stored as {localHHMMToUtc(form.default_post_time)} UTC</p>
+          {errors.default_post_time && <p className="field-error">{errors.default_post_time}</p>}</div>
         <div className="actions">
           <button className="btn" type="submit" disabled={save.isPending}>{save.isPending ? 'Saving…' : 'Save'}</button>
         </div>

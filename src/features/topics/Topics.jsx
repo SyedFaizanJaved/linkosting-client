@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSettings, useSaveSettings } from '../settings/useSettings.js';
 import { useAnalytics } from '../analytics/useAnalytics.js';
 import Feedback from '../../components/Feedback.jsx';
+import { validate, topicNameSchema } from '../../lib/validation.js';
+import { toast } from '../../lib/toast.js';
 
 export default function Topics() {
   const navigate = useNavigate();
@@ -11,6 +13,7 @@ export default function Topics() {
   const save = useSaveSettings();
   const [newTopic, setNewTopic] = useState('');
   const [saveError, setSaveError] = useState('');
+  const [errors, setErrors] = useState({});
 
   const topics = (s?.topics || '').split(',').map(t => t.trim()).filter(Boolean);
   const counts = Object.fromEntries((a?.perTopic || []).map(t => [t.topic, t.count]));
@@ -32,13 +35,17 @@ export default function Topics() {
 
       <form className="actions" onSubmit={e => {
         e.preventDefault();
+        const { ok, errors: errs } = validate(topicNameSchema, newTopic);
+        if (!ok) { setErrors({ topic: errs._ }); toast.error(errs._); return; }
+        setErrors({});
         const t = newTopic.trim();
         if (t && !topics.includes(t)) saveTopics([...topics, t]);
         setNewTopic('');
       }}>
-        <input className="input" placeholder="Add a topic…" value={newTopic} onChange={e => setNewTopic(e.target.value)} style={{ maxWidth: 280 }} />
+        <input className="input" placeholder="Add a topic…" maxLength={40} value={newTopic} onChange={e => setNewTopic(e.target.value)} style={{ maxWidth: 280 }} />
         <button className="btn" type="submit" disabled={save.isPending || !newTopic.trim()}>Add</button>
       </form>
+      {errors.topic && <p className="field-error">{errors.topic}</p>}
       <Feedback msg={saveError} kind="error" />
 
       <div style={{ display: 'grid', gap: 10, marginTop: 16 }}>
