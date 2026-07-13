@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 // Auth is cookie-based (httpOnly). These endpoints ARE the auth handshake or
 // are meant to fail as 401 without a session, so they must not trigger the
@@ -12,7 +12,7 @@ function raw(path, { method = 'GET', body, headers } = {}) {
   return fetch(`${BASE}${path}`, {
     method,
     credentials: 'include', // send/receive the httpOnly auth cookies
-    headers: { 'content-type': 'application/json', ...headers },
+    headers: { 'content-type': 'application/json', 'x-requested-with': 'fetch', ...headers },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
 }
