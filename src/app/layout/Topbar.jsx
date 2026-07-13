@@ -20,7 +20,7 @@ export default function Topbar({ onMenu }) {
       <span style={{ flex: 1 }} />
       <span className="icon-btn" title="Toggle theme" onClick={toggle}>{theme === 'light' ? '🌙' : '☀️'}</span>
       <span className="icon-btn" title="Notifications" onClick={() => navigate('/notifications')}>
-        🔔{notifications?.length > 0 && <span className="bell-dot" />}
+        🔔{notifications?.some(n => !n.read) && <span className="bell-dot" />}
       </span>
       <button className="btn" onClick={() => navigate('/generate')}>＋ New post</button>
     </div>
