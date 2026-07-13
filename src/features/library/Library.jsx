@@ -47,6 +47,7 @@ export default function Library() {
                   <tr key={d.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/drafts/${d.id}`)}>
                     <td className="muted">{fmtDate(d.created_at)}</td>
                     <td style={{ maxWidth: 380, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}>
+                      {d.has_image && <span title="Has image" style={{ marginRight: 6 }}>🖼</span>}
                       {(d.edited_content || d.content).split('\n')[0]}
                     </td>
                     <td className="muted">{d.topic || '—'}</td>

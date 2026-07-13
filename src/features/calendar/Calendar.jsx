@@ -61,7 +61,7 @@ export default function Calendar() {
               {posts.map(p => (
                 <div key={p.id} className="cal-post" title={p.edited_content || p.content}
                   onClick={() => navigate(`/drafts/${p.id}`)}>
-                  {new Date(p.scheduled_at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })} · {(p.edited_content || p.content).split('\n')[0]}
+                  {p.has_image ? '🖼 ' : ''}{new Date(p.scheduled_at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })} · {(p.edited_content || p.content).split('\n')[0]}
                 </div>
               ))}
             </div>
