@@ -116,6 +116,16 @@
 .prebuilt-card { transition: transform .15s, border-color .15s, box-shadow .15s; }
 .prebuilt-card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: var(--sh-lg); }
 
+/* toasts (top-right) */
+.toaster { position: fixed; top: 16px; right: 16px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; max-width: 360px; }
+.toast { display: flex; align-items: center; gap: 10px; padding: 12px 15px; border-radius: 12px; font-size: 13.5px;
+  font-weight: 600; color: #fff; box-shadow: var(--sh-lg); cursor: pointer; animation: toastIn .18s ease; }
+.toast-error { background: var(--red); }
+.toast-success { background: var(--green); }
+.toast-info { background: var(--inkBtn); color: var(--onInk); }
+@keyframes toastIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+.field-error { color: var(--red); font-size: 12px; font-weight: 600; margin-top: 5px; }
+
 /* mobile */
 .menu-btn { display: none; }
 .table-wrap { overflow-x: auto; }
