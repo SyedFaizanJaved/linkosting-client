@@ -1,27 +1,35 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { api, setToken, clearToken } from '../../lib/api.js';
+import { api } from '../../lib/api.js';
 
-export function useLogout() {
-  const qc = useQueryClient();
-  return () => {
-    clearToken();
-    qc.clear();               // drop all cached server state so the next session starts clean
-    window.location.href = '/login';
-  };
+// Whether we have a valid session. Drives the route Guard; the httpOnly cookie
+// itself is invisible to JS, so this is the only way to know we're signed in.
+export function useMe() {
+  return useQuery({ queryKey: ['me'], queryFn: () => api('/api/auth/me'), retry: false, staleTime: 60_000 });
 }
 
 export function useLogin() {
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: creds => api('/api/auth/login', { method: 'POST', body: creds }),
-    onSuccess: ({ token }) => setToken(token),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['me'] }),
   });
 }
 
 export function useRegister() {
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: creds => api('/api/auth/register', { method: 'POST', body: creds }),
-    onSuccess: ({ token }) => setToken(token),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['me'] }),
   });
+}
+
+export function useLogout() {
+  const qc = useQueryClient();
+  return async () => {
+    try { await api('/api/auth/logout', { method: 'POST' }); } catch { /* clear locally regardless */ }
+    qc.clear();
+    window.location.href = '/login';
+  };
 }
 
 export function useAuthStatus() {

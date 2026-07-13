@@ -3,7 +3,7 @@ import { api } from '../../lib/api.js';
 import { qk } from '../../lib/queryKeys.js';
 
 export function useSettings() {
-  return useQuery({ queryKey: qk.settings, queryFn: () => api('/api/settings'), enabled: !!localStorage.getItem('token') });
+  return useQuery({ queryKey: qk.settings, queryFn: () => api('/api/settings') });
 }
 
 export function useSaveSettings() {

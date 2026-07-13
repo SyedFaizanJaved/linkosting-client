@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Providers } from './providers.jsx';
 import Layout from './layout/Layout.jsx';
-import { getToken } from '../lib/api.js';
+import { useMe } from '../features/auth/useAuth.js';
 import { useSettings } from '../features/settings/useSettings.js';
 import Login from '../features/auth/Login.jsx';
 import Register from '../features/auth/Register.jsx';
@@ -19,7 +19,12 @@ import Notifications from '../features/notifications/Notifications.jsx';
 import Settings from '../features/settings/Settings.jsx';
 
 function Guard({ children }) {
-  return getToken() ? children : <Navigate to="/login" replace />;
+  const me = useMe();
+  if (me.isLoading) {
+    return <div className="screen" style={{ padding: 40 }}><div className="skeleton" style={{ height: 220 }} /></div>;
+  }
+  if (me.isError || !me.data) return <Navigate to="/login" replace />;
+  return children;
 }
 
 function OnboardGate({ children }) {
