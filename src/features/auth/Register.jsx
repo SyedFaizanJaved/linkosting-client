@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthLayout from './AuthLayout.jsx';
-import { useRegister, useAuthStatus } from './useAuth.js';
+import { useRegister } from './useAuth.js';
 import { validate, registerSchema } from '../../lib/validation.js';
 import { toast } from '../../lib/toast.js';
 
@@ -11,22 +11,18 @@ export default function Register() {
   const [confirm, setConfirm] = useState('');
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
-  const status = useAuthStatus();
   const register = useRegister();
-
-  // First-run only: once an account exists, registration is closed.
-  if (status.data?.registered) return <Navigate to="/login" replace />;
 
   function submit(e) {
     e.preventDefault();
     const { ok, errors: errs } = validate(registerSchema, { email, password, confirm });
     setErrors(errs);
     if (!ok) { toast.error(Object.values(errs)[0]); return; }
-    register.mutate({ email, password }, { onSuccess: () => navigate('/onboarding') });
+    register.mutate({ email, password }, { onSuccess: () => navigate('/pending') });
   }
 
   return (
-    <AuthLayout title="Create your account" subtitle="Set up the single account for this workspace.">
+    <AuthLayout title="Create your account" subtitle="Create your account — an admin will approve it.">
       <form onSubmit={submit}>
         <div className="field">
           <label htmlFor="reg-email">Email</label>
@@ -46,7 +42,7 @@ export default function Register() {
             value={confirm} onChange={e => setConfirm(e.target.value)} required />
           {errors.confirm && <p className="field-error">{errors.confirm}</p>}
         </div>
-        <button className="btn" type="submit" disabled={register.isPending || status.isLoading}
+        <button className="btn" type="submit" disabled={register.isPending}
           style={{ width: '100%', justifyContent: 'center' }}>
           {register.isPending ? 'Creating…' : 'Create account'}
         </button>
