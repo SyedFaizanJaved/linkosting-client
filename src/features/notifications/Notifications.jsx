@@ -8,7 +8,7 @@ export default function Notifications() {
   const { data: items, isLoading, error } = useNotifications();
 
   return (
-    <div className="screen" style={{ maxWidth: 720 }}>
+    <div className="screen">
       <h1 style={{ marginTop: 20 }}>Notifications</h1>
       {isLoading && <div className="skeleton" style={{ height: 160, marginTop: 16 }} />}
       {error && <p className="error-text" style={{ marginTop: 16 }}>{error.message}</p>}
