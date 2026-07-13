@@ -38,3 +38,5 @@ export const usePublishDraft = () => useDraftMutation(id => api(`/api/drafts/${i
 export const useRegenerateDraft = () => useDraftMutation(id => api(`/api/drafts/${id}/regenerate`, { method: 'POST' }));
 export const useSaveMetrics = () => useDraftMutation(({ id, ...metrics }) => api(`/api/drafts/${id}/metrics`, { method: 'PUT', body: metrics }));
 export const useDeleteDraft = () => useDraftMutation(id => api(`/api/drafts/${id}`, { method: 'DELETE' }));
+export const useGenerateImage = () => useDraftMutation(id => api(`/api/drafts/${id}/image`, { method: 'POST' }));
+export const useDeleteImage = () => useDraftMutation(id => api(`/api/drafts/${id}/image`, { method: 'DELETE' }));

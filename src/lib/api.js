@@ -48,3 +48,13 @@ export function qs(obj) {
   const s = p.toString();
   return s ? `?${s}` : '';
 }
+
+export async function apiBlob(path) {
+  let res = await raw(path);
+  if (res.status === 401) {
+    const refreshed = await raw('/api/auth/refresh', { method: 'POST' });
+    if (refreshed.ok) res = await raw(path);
+  }
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.blob();
+}

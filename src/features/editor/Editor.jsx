@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import {
   useDraft, useSaveDraft, useApproveDraft, useScheduleDraft,
   usePublishDraft, useRegenerateDraft, useSaveMetrics,
+  useGenerateImage, useDeleteImage,
 } from '../drafts/hooks.js';
 import { useSettings } from '../settings/useSettings.js';
 import { fmtDateTime, nowLocalInputValue } from '../../lib/format.js';
@@ -10,6 +11,7 @@ import ConfirmButton from '../../components/ConfirmButton.jsx';
 import Feedback from '../../components/Feedback.jsx';
 import { validate, metricSchema } from '../../lib/validation.js';
 import { toast } from '../../lib/toast.js';
+import { apiBlob } from '../../lib/api.js';
 
 function defaultSlotIso(defaultPostTime) {
   const [h, m] = (defaultPostTime || '12:00').split(':').map(Number);
@@ -99,6 +101,8 @@ export default function Editor() {
           disabled={locked} style={{ border: 'none', padding: 0 }} />
       </div>
 
+      <ImagePanel draft={draft} locked={locked} onMessage={setMsg} />
+
       {!locked && (
         <>
           <div className="actions">
@@ -162,6 +166,59 @@ export default function Editor() {
         </div>
       )}
       <Feedback msg={msg?.text} kind={msg?.kind} />
+    </div>
+  );
+}
+
+function ImagePanel({ draft, locked, onMessage }) {
+  const [url, setUrl] = useState(null);
+  const [ver, setVer] = useState(0);
+  const gen = useGenerateImage();
+  const del = useDeleteImage();
+  const busy = gen.isPending || del.isPending;
+
+  useEffect(() => {
+    let revoked = false;
+    let objectUrl;
+    if (draft.has_image) {
+      apiBlob(`/api/drafts/${draft.id}/image?v=${ver}`)
+        .then(b => { if (!revoked) { objectUrl = URL.createObjectURL(b); setUrl(objectUrl); } })
+        .catch(() => {});
+    } else {
+      setUrl(null);
+    }
+    return () => { revoked = true; if (objectUrl) URL.revokeObjectURL(objectUrl); };
+  }, [draft.id, draft.has_image, ver]);
+
+  const generate = () => gen.mutate(draft.id, {
+    onSuccess: () => { setVer(v => v + 1); onMessage({ text: 'Image generated', kind: 'ok' }); },
+    onError: e => onMessage({ text: e.message, kind: 'error' }),
+  });
+  const remove = () => del.mutate(draft.id, {
+    onSuccess: () => onMessage({ text: 'Image removed', kind: 'ok' }),
+    onError: e => onMessage({ text: e.message, kind: 'error' }),
+  });
+
+  return (
+    <div className="card" style={{ marginTop: 14 }}>
+      <h2>Image</h2>
+      {busy && <div className="skeleton" style={{ height: 180, marginTop: 12 }} />}
+      {!busy && url && (
+        <img src={url} alt="Post illustration" style={{ width: '100%', borderRadius: 12, marginTop: 12, display: 'block' }} />
+      )}
+      {!busy && !draft.has_image && (
+        <p className="muted" style={{ margin: '8px 0 0' }}>No image yet. Add one generated from your post text.</p>
+      )}
+      {!locked && (
+        <div className="actions">
+          {draft.has_image
+            ? <>
+                <button className="btn ghost" disabled={busy} onClick={generate}>Regenerate image</button>
+                <button className="btn ghost" disabled={busy} onClick={remove}>Remove image</button>
+              </>
+            : <button className="btn" disabled={busy} onClick={generate}>Add image ✦</button>}
+        </div>
+      )}
     </div>
   );
 }
