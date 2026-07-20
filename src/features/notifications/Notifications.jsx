@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useNotifications, useReadAllNotifications, useDismissNotification } from './useNotifications.js';
 
-const ICONS = { review: '📝', posted: '✅', token: '⚠️' };
+const ICONS = { review: '📝', posted: '✅', token: '⚠️', member: '👤' };
 
 export default function Notifications() {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ export default function Notifications() {
           <div key={n.id} className="row-item" style={{ cursor: 'default', opacity: n.read ? 0.6 : 1 }}>
             <span style={{ fontSize: 18 }}>{ICONS[n.type] || '🔔'}</span>
             <span style={{ flex: 1, minWidth: 0, cursor: 'pointer' }}
-              onClick={() => (n.type === 'token' ? navigate('/settings') : n.draftId && navigate(`/drafts/${n.draftId}`))}>
+              onClick={() => (['token', 'member'].includes(n.type) ? navigate('/settings') : n.draftId && navigate(`/drafts/${n.draftId}`))}>
               <span style={{ display: 'block', fontWeight: 700, fontSize: 14 }}>{n.title}</span>
               {n.detail && <span className="faint" style={{ display: 'block', fontSize: 12, marginTop: 2 }}>{n.detail}</span>}
             </span>

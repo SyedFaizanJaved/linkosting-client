@@ -4,4 +4,5 @@ export const qk = {
   settings: ['settings'],
   analytics: ['analytics'],
   notifications: ['notifications'],
+  users: ['admin', 'users'],
 };

@@ -21,7 +21,9 @@ function toLogin() {
   if (window.location.pathname !== '/login') window.location.href = '/login';
 }
 
-export async function api(path, opts = {}) {
+// The one transport: cookies, CSRF header, a single silent-refresh retry, and
+// error unwrapping. Callers differ only in how they read the body.
+async function request(path, opts = {}) {
   let res = await raw(path, opts);
 
   // Access cookie expired → try one silent refresh, then replay the request.
@@ -39,8 +41,10 @@ export async function api(path, opts = {}) {
     const b = await res.json().catch(() => ({}));
     throw new Error(b.error || `HTTP ${res.status}`);
   }
-  return res.json();
+  return res;
 }
+
+export const api = async (path, opts) => (await request(path, opts)).json();
 
 export function qs(obj) {
   const p = new URLSearchParams();
@@ -49,12 +53,4 @@ export function qs(obj) {
   return s ? `?${s}` : '';
 }
 
-export async function apiBlob(path) {
-  let res = await raw(path);
-  if (res.status === 401) {
-    const refreshed = await raw('/api/auth/refresh', { method: 'POST' });
-    if (refreshed.ok) res = await raw(path);
-  }
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.blob();
-}
+export const apiBlob = async path => (await request(path)).blob();

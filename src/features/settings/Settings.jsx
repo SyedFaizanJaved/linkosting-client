@@ -5,9 +5,12 @@ import { utcHHMMToLocal, localHHMMToUtc } from '../../lib/format.js';
 import Feedback from '../../components/Feedback.jsx';
 import { validate, settingsSchema } from '../../lib/validation.js';
 import { toast } from '../../lib/toast.js';
+import { useMe } from '../auth/useAuth.js';
+import AdminUsers from '../admin/AdminUsers.jsx';
 
 export default function Settings() {
   const { data: s, isLoading, error } = useSettings();
+  const { data: me } = useMe();
   const save = useSaveSettings();
   const [form, setForm] = useState(null);
   const [feedsText, setFeedsText] = useState('');
@@ -113,6 +116,8 @@ export default function Settings() {
           {s.linkedin.connected || s.linkedin.expired ? 'Reconnect LinkedIn' : 'Connect LinkedIn'}
         </button>
       </div>
+
+      <AdminUsers me={me} />
     </div>
   );
 }
