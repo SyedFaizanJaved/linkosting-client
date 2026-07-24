@@ -1,12 +1,14 @@
 import { useUsers, useSetUserStatus } from './useUsers.js';
 import ConfirmButton from '../../components/ConfirmButton.jsx';
 import { toast } from '../../lib/toast.js';
+import QueryState from '../../components/QueryState.jsx';
 
 const LABEL = { pending: 'Pending approval', active: 'Active', deactivated: 'Deactivated' };
 
 export default function AdminUsers({ me }) {
   const isAdmin = me?.role === 'admin';
-  const { data: users, isLoading, error } = useUsers(isAdmin);
+  const usersQ = useUsers(isAdmin);
+  const users = usersQ.data;
   const setStatus = useSetUserStatus();
 
   if (!isAdmin) return null;
@@ -24,8 +26,7 @@ export default function AdminUsers({ me }) {
     <div className="card" style={{ marginTop: 14 }}>
       <h2>Members{pending ? ` — ${pending} awaiting approval` : ''}</h2>
 
-      {isLoading && <p className="muted" style={{ margin: '8px 0 0' }}>Loading members…</p>}
-      {error && <p className="error-text" style={{ margin: '8px 0 0' }}>Couldn't load members: {error.message}</p>}
+      <QueryState q={usersQ} height={80} />
 
       {users?.map(u => (
         <div key={u.id} style={{

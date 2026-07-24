@@ -1,11 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { useNotifications, useReadAllNotifications, useDismissNotification } from './useNotifications.js';
+import QueryState from '../../components/QueryState.jsx';
 
 const ICONS = { review: '📝', posted: '✅', token: '⚠️', member: '👤' };
 
 export default function Notifications() {
   const navigate = useNavigate();
-  const { data: items, isLoading, error } = useNotifications();
+  const itemsQ = useNotifications();
+  const items = itemsQ.data;
   const readAll = useReadAllNotifications();
   const dismiss = useDismissNotification();
   const unread = (items || []).filter(n => !n.read).length;
@@ -21,9 +23,7 @@ export default function Notifications() {
           </button>
         )}
       </div>
-      {isLoading && <div className="skeleton" style={{ height: 160, marginTop: 16 }} />}
-      {error && <p className="error-text" style={{ marginTop: 16 }}>{error.message}</p>}
-      {!isLoading && !error && items?.length === 0 && <p className="empty">All caught up.</p>}
+      <QueryState q={itemsQ} height={160} empty="All caught up." />
       <div style={{ marginTop: 8 }}>
         {items?.map(n => (
           <div key={n.id} className="row-item" style={{ cursor: 'default', opacity: n.read ? 0.6 : 1 }}>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDrafts, useScheduleDraft } from '../drafts/hooks.js';
 import { nowLocalInputValue } from '../../lib/format.js';
 import Feedback from '../../components/Feedback.jsx';
+import QueryState from '../../components/QueryState.jsx';
 
 function monthDays(year, month) {
   const first = new Date(year, month, 1);
@@ -20,7 +21,8 @@ export default function Calendar() {
   const [cursor, setCursor] = useState(() => { const n = new Date(); return { y: n.getFullYear(), m: n.getMonth() }; });
   const [slots, setSlots] = useState({});
   const [scheduleError, setScheduleError] = useState('');
-  const { data: drafts, isLoading, error } = useDrafts();
+  const draftsQ = useDrafts();
+  const drafts = draftsQ.data;
   const schedule = useScheduleDraft();
 
   const days = monthDays(cursor.y, cursor.m);
@@ -34,8 +36,7 @@ export default function Calendar() {
   const unscheduled = (drafts || []).filter(d => !d.scheduled_at && (d.status === 'pending' || d.status === 'approved'));
   const monthName = new Date(cursor.y, cursor.m).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
 
-  if (isLoading) return <div className="skeleton" style={{ height: 420, marginTop: 20 }} />;
-  if (error) return <p className="error-text" style={{ marginTop: 20 }}>{error.message}</p>;
+  if (draftsQ.isLoading || draftsQ.error) return <QueryState q={draftsQ} height={420} />;
 
   return (
     <div className="screen">

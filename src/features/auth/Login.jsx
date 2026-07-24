@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import AuthLayout from './AuthLayout.jsx';
 import { useLogin } from './useAuth.js';
 import { validate, loginSchema } from '../../lib/validation.js';
@@ -10,6 +10,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const login = useLogin();
 
   function submit(e) {
@@ -23,6 +24,9 @@ export default function Login() {
   return (
     <AuthLayout title="Welcome back" subtitle="Sign in to your Linkosting account.">
       <form onSubmit={submit}>
+        {params.get('expired') && !login.isError && (
+          <p className="error-text" style={{ marginBottom: 14 }}>Your session expired — please sign in again.</p>
+        )}
         <div className="field">
           <label htmlFor="login-email">Email</label>
           <input id="login-email" className="input" type="email" autoComplete="email"

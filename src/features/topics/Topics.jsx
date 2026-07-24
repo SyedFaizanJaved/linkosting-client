@@ -5,10 +5,12 @@ import { useAnalytics } from '../analytics/useAnalytics.js';
 import Feedback from '../../components/Feedback.jsx';
 import { validate, topicNameSchema } from '../../lib/validation.js';
 import { toast } from '../../lib/toast.js';
+import QueryState from '../../components/QueryState.jsx';
 
 export default function Topics() {
   const navigate = useNavigate();
-  const { data: s, isLoading, error } = useSettings();
+  const sQ = useSettings();
+  const s = sQ.data;
   const { data: a } = useAnalytics();
   const save = useSaveSettings();
   const [newTopic, setNewTopic] = useState('');
@@ -18,8 +20,7 @@ export default function Topics() {
   const topics = (s?.topics || '').split(',').map(t => t.trim()).filter(Boolean);
   const counts = Object.fromEntries((a?.perTopic || []).map(t => [t.topic, t.count]));
 
-  if (isLoading) return <div className="skeleton" style={{ height: 260, marginTop: 20 }} />;
-  if (error) return <p className="error-text" style={{ marginTop: 20 }}>{error.message}</p>;
+  if (sQ.isLoading || sQ.error) return <QueryState q={sQ} height={260} />;
 
   function saveTopics(list) {
     save.mutate({ topics: list.join(', ') }, {
