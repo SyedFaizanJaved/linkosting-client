@@ -142,3 +142,8 @@
   .cal-grid { overflow-x: auto; grid-template-columns: repeat(7, minmax(96px, 1fr)); }
   .table th, .table td { white-space: nowrap; }
 }
+
+/* offline banner (bottom-center) */
+.offline-banner { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 1000;
+  background: var(--inkBtn); color: var(--onInk); font-size: 13px; font-weight: 700;
+  padding: 10px 20px; border-radius: 999px; box-shadow: var(--sh-lg); }

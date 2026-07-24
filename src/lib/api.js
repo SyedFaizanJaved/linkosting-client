@@ -8,17 +8,24 @@ const NO_REFRESH = [
   '/api/auth/forgot', '/api/auth/reset', '/api/auth/status', '/api/auth/logout',
 ];
 
-function raw(path, { method = 'GET', body, headers } = {}) {
-  return fetch(`${BASE}${path}`, {
-    method,
-    credentials: 'include', // send/receive the httpOnly auth cookies
-    headers: { 'content-type': 'application/json', 'x-requested-with': 'fetch', ...headers },
-    body: body === undefined ? undefined : JSON.stringify(body),
-  });
+async function raw(path, { method = 'GET', body, headers } = {}) {
+  try {
+    return await fetch(`${BASE}${path}`, {
+      method,
+      credentials: 'include', // send/receive the httpOnly auth cookies
+      headers: { 'content-type': 'application/json', 'x-requested-with': 'fetch', ...headers },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+  } catch {
+    // fetch rejects only on network failure — say so instead of "Failed to fetch".
+    throw new Error(navigator.onLine
+      ? "Can't reach the server — try again in a moment."
+      : "You're offline — check your connection and try again.");
+  }
 }
 
 function toLogin() {
-  if (window.location.pathname !== '/login') window.location.href = '/login';
+  if (window.location.pathname !== '/login') window.location.href = '/login?expired=1';
 }
 
 // The one transport: cookies, CSRF header, a single silent-refresh retry, and

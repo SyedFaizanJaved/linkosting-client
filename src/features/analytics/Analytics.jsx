@@ -1,11 +1,12 @@
 import { useAnalytics } from './useAnalytics.js';
 import StatTile from '../../components/StatTile.jsx';
 import { fmtNum } from '../../lib/format.js';
+import QueryState from '../../components/QueryState.jsx';
 
 export default function Analytics() {
-  const { data: a, isLoading, error } = useAnalytics();
-  if (isLoading) return <div className="skeleton" style={{ height: 300, marginTop: 20 }} />;
-  if (error) return <p className="error-text" style={{ marginTop: 20 }}>{error.message}</p>;
+  const aQ = useAnalytics();
+  const a = aQ.data;
+  if (aQ.isLoading || aQ.error) return <QueryState q={aQ} height={300} />;
 
   const max = Math.max(1, ...a.postsPerWeek.map(w => w.count));
   const topicMax = Math.max(1, ...a.perTopic.map(t => t.count));

@@ -7,9 +7,11 @@ import { validate, settingsSchema } from '../../lib/validation.js';
 import { toast } from '../../lib/toast.js';
 import { useMe } from '../auth/useAuth.js';
 import AdminUsers from '../admin/AdminUsers.jsx';
+import QueryState from '../../components/QueryState.jsx';
 
 export default function Settings() {
-  const { data: s, isLoading, error } = useSettings();
+  const sQ = useSettings();
+  const s = sQ.data;
   const { data: me } = useMe();
   const save = useSaveSettings();
   const [form, setForm] = useState(null);
@@ -36,8 +38,8 @@ export default function Settings() {
     if (li) window.history.replaceState({}, '', window.location.pathname);
   }, []);
 
-  if (isLoading || !form) return <div className="skeleton" style={{ height: 300, marginTop: 20 }} />;
-  if (error) return <p className="error-text" style={{ marginTop: 20 }}>{error.message}</p>;
+  if (sQ.isLoading || sQ.error) return <QueryState q={sQ} height={300} />;
+  if (!form) return <div className="skeleton" style={{ height: 300, marginTop: 20 }} />;
 
   const edit = patch => { setForm({ ...form, ...patch }); setMsg(null); };
   const payload = () => ({

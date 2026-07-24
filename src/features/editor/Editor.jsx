@@ -8,6 +8,7 @@ import {
 import { useSettings } from '../settings/useSettings.js';
 import { fmtDateTime, nowLocalInputValue } from '../../lib/format.js';
 import ConfirmButton from '../../components/ConfirmButton.jsx';
+import QueryState from '../../components/QueryState.jsx';
 import Feedback from '../../components/Feedback.jsx';
 import { validate, metricSchema } from '../../lib/validation.js';
 import { toast } from '../../lib/toast.js';
@@ -23,7 +24,8 @@ function defaultSlotIso(defaultPostTime) {
 
 export default function Editor() {
   const { id } = useParams();
-  const { data: draft, isLoading, error } = useDraft(id);
+  const draftQ = useDraft(id);
+  const draft = draftQ.data;
   const { data: settings } = useSettings();
   const [text, setText] = useState('');
   const [slot, setSlot] = useState('');
@@ -48,8 +50,7 @@ export default function Editor() {
     }
   }, [draft?.id, draft?.content, draft?.edited_content]);
 
-  if (isLoading) return <div className="skeleton" style={{ height: 300, marginTop: 20 }} />;
-  if (error) return <p className="error-text" style={{ marginTop: 20 }}>{error.message}</p>;
+  if (draftQ.isLoading || draftQ.error) return <QueryState q={draftQ} height={300} />;
   if (!draft) return <p className="empty">No draft yet. One is generated every morning, or create one in the Generator.</p>;
 
   const locked = draft.status === 'posted';

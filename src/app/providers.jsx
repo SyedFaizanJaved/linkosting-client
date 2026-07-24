@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider, MutationCache } from '@tanstack/react-query';
 import Toaster from '../components/Toaster.jsx';
+import OfflineBanner from '../components/OfflineBanner.jsx';
 import { toast } from '../lib/toast.js';
 
 const client = new QueryClient({
@@ -15,6 +16,7 @@ export function Providers({ children }) {
     <QueryClientProvider client={client}>
       {children}
       <Toaster />
+      <OfflineBanner />
     </QueryClientProvider>
   );
 }

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDrafts } from '../drafts/hooks.js';
 import { useSettings } from '../settings/useSettings.js';
 import { fmtDate } from '../../lib/format.js';
+import QueryState from '../../components/QueryState.jsx';
 
 const STATUSES = ['', 'pending', 'approved', 'posted', 'skipped'];
 
@@ -12,7 +13,9 @@ export default function Library() {
   const [topic, setTopic] = useState('');
   const [qInput, setQInput] = useState('');
   const [q, setQ] = useState('');
-  const { data: drafts, isLoading, error } = useDrafts({ status, topic, q });
+  const draftsQ = useDrafts({ status, topic, q });
+  const drafts = draftsQ.data;
+  const filtered = Boolean(q || status || topic);
   const { data: s } = useSettings();
   const topics = (s?.topics || '').split(',').map(t => t.trim()).filter(Boolean);
 
@@ -33,9 +36,13 @@ export default function Library() {
       </div>
 
       <div className="card" style={{ marginTop: 14, padding: '8px 20px' }}>
-        {isLoading && <div className="skeleton" style={{ height: 200, margin: '12px 0' }} />}
-        {error && <p className="error-text" style={{ padding: '16px 0' }}>{error.message}</p>}
-        {!isLoading && !error && (!drafts || drafts.length === 0) && <p className="empty">No posts match.</p>}
+        <QueryState
+          q={draftsQ}
+          empty={filtered ? 'No posts match your search.' : 'No posts yet — generate your first.'}
+          emptyAction={filtered
+            ? <button className="btn ghost" onClick={() => { setQ(''); setQInput(''); setStatus(''); setTopic(''); }}>Clear filters</button>
+            : <button className="btn ghost" onClick={() => navigate('/generate')}>Open generator</button>}
+        />
         {drafts?.length > 0 && (
           <div className="table-wrap">
             <table className="table">
